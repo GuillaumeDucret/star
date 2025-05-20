@@ -36,12 +36,17 @@ export class Parser {
      */
     peakToken(types, after) {
         for (const type of types) {
+            let token
+
             if (type.charCodes) {
-                return this.peakCharToken(type, after)
+                token = this.peakCharToken(type, after)
             } else {
-                return this.peakStringToken(type, after)
+                token = this.peakStringToken(type, after)
             }
+
+            if (token) return token
         }
+        return null
     }
 
     /**
@@ -56,7 +61,7 @@ export class Parser {
                 if (this.readStringToken(type)) return
             }
         }
-        throw new Error(`unexpected token at ${this.pos}`)
+        throw new Error(`unexpected token ${this.input[this.pos]} at position ${this.pos}`)
     }
 
     /**
@@ -170,8 +175,6 @@ export class Parser {
         assert(!!type.charCodes)
 
         pos ??= this.pos
-
-        console.log(pos)
         return (
             this.input.charCodeAt(pos) === type.charCodes[0] &&
             (type.charCodes[1] ? this.input.charCodeAt(pos + 1) === type.charCodes[1] : true) &&

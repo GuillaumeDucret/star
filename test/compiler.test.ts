@@ -3,19 +3,35 @@ import { compile } from '../src/compiler'
 
 const source = `  
 <script>
-    let a = 'a'
+    const div = root.querySelector('')
+
+    effect(() => {
+        const str = this.count.value
+    })
+
+    class MyElement extends HTMLElement {
+  
+    constructor() {
+        // Always call super first in constructor
+        super();
+    }
+
+    connectedCallback() {
+        console.log("Custom element added to page.");
+    }
+}
+
 </script>
 <template>
-    <div>aa</div>
-    <style>div {color: red}</style>
-    dd
+    <div>aa {count} ss<b>h</b>{count} bb</div> 
 </template>
 `
 
 describe('.test()', {}, () => {
-    it('test', {}, () => {
+    it('test', {}, () => { 
+        console.log('/'.charCodeAt(0))
         const result = compile(source)
         console.log(result)
     })
 })
- 
+  

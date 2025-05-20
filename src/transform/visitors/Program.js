@@ -1,8 +1,10 @@
 
-export function Program(node, {state}) {
-    const {analysis} = state
+export function Program(node, {state, next}) {
+    
 
-    if (analysis.fragment) {
+    next()
+
+    if (state.template.template) {
 
         const stmt = {
           "type": "VariableDeclaration",
@@ -15,7 +17,7 @@ export function Program(node, {state}) {
               },
               "init": {
                 "type": "Literal",
-                "value": analysis.fragment.join('')
+                "value": state.template.template.join('')
               }
             }
           ],

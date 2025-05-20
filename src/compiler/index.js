@@ -8,5 +8,6 @@ export function compile(source) {
     console.log(JSON.stringify(ast, undefined, 2))
     const analysis = analyse(ast)
     const result = transform(ast, analysis)
+    console.log(JSON.stringify(result, undefined, 2))
     return print(result) 
 }

@@ -1,3 +1,5 @@
+import { parseIfBlock } from './block'
+import { parseExpressionTag } from './expression'
 import { Parser } from './parser'
 import { TokenTypes } from './tokentype'
 
@@ -14,7 +16,6 @@ export function parseElement(p) {
     p.skipWhitespaces()
     p.expectToken([TokenTypes.gte, TokenTypes.slashGte])
 
-    console.log(name)
     if (p.type === TokenTypes.gte) {
         const fragment = parseFragment(p)
 
@@ -40,21 +41,31 @@ export function parseFragment(p) {
     const nodes = []
 
     p.skipWhitespaces()
-    while (!p.peakToken([TokenTypes.lteSlash])) {
-        const lteToken = p.peakToken([TokenTypes.lte])
-        const nameToken = p.peakToken([TokenTypes.name], lteToken)
+    while (!p.peakToken([TokenTypes.lteSlash, TokenTypes.braceLSlash, TokenTypes.braceLColumn])) {
+        const punctToken = p.peakToken([TokenTypes.lte, TokenTypes.braceLHash, TokenTypes.braceL])
+        const nameToken = p.peakToken([TokenTypes.name], punctToken)
 
-        if (nameToken?.value === 'script') {
-            throw new Error('invalid script position')
-        }
-        if (nameToken?.value === 'style') {
-            throw new Error('invalid style position')
-        }
+        switch (punctToken?.type) {
+            case TokenTypes.lte:
+                if (nameToken?.value === 'script') throw new Error('invalid script position')
+                if (nameToken?.value === 'style') throw new Error('invalid style position')
 
-        if (nameToken) {
-            nodes.push(parseElement(p))
-        } else {
-            nodes.push(parseText(p))
+                nodes.push(parseElement(p))
+                break
+
+            case TokenTypes.braceLHash:
+                if (nameToken?.value === 'if') {
+                    nodes.push(parseIfBlock(p))
+                    break
+                }
+                throw new Error(`unknown block ${nameToken?.value}`)
+
+            case TokenTypes.braceL:
+                nodes.push(parseExpressionTag(p))
+                break
+            default:
+                nodes.push(parseText(p))
+                break
         }
         p.skipWhitespaces()
     }
@@ -68,6 +79,7 @@ export function parseFragment(p) {
  * @returns
  */
 export function parseText(p) {
-    p.expectToken([TokenTypes.name])
+    p.expectToken([TokenTypes.text])
+    console.log(p.value)
     return { type: 'Text', start: p.start, end: p.end, raw: p.value }
 }

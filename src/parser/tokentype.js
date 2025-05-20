@@ -27,11 +27,20 @@ function stringTT(label, test) {
 
 export const TokenTypes = {
     name: stringTT('name', name),
-    string: stringTT('name', string),
+    text: stringTT('text', text),
+
+    // html punctuation
     lte: charTT('<', [60]),
     gte: charTT('>', [62]),
     slashGte: charTT('/>', [47, 62]),
-    lteSlash: charTT('</', [60, 47])
+    lteSlash: charTT('</', [60, 47]),
+
+    // block punctuation
+    braceL: charTT('{', [123]),
+    braceR: charTT('}', [125]),
+    braceLHash: charTT('{#', [123, 35]),
+    braceLColumn: charTT('{:', [123, 58]),
+    braceLSlash: charTT('{/', [123, 47])
 }
 
 function name(code) {
@@ -43,7 +52,7 @@ function name(code) {
     return false
 }
 
-function string(code) {
+function text(code) {
     if (code === 10) return true
     if (code < 48) return false
     if (code < 58) return true

@@ -1,105 +1,87 @@
-import {
-    buildAssignmentStatement,
-    buildMemberExpression,
-    buildTemplateLiteral,
-    buildEffect,
-    buildIdentifier,
-    buildMemberExpression2,
-    buildVariableDeclaration
-} from '../../builders'
+import * as b from '../../builders.js'
 
-export function Fragment(node, context) {
-    let state = {
-        text: [],
-        expressions: []
-    }
-
-    let textPos = 0
-    let elmStmt
+export function Fragment(node, ctx) {
+    let text = []
+    let expressions = []
+    let index = 0
+    let rootId
 
     for (const child of node.nodes) {
         switch (child.type) {
             case 'Text':
             case 'ExpressionTag':
-                context.visit(child, state)
+                ctx.visit(child, { text, expressions, analysis: ctx.state.analysis })
                 break
             default:
                 finalize()
-                context.visit(child)
+                ctx.visit(child)
                 break
         }
     }
     finalize()
 
     function finalize() {
-        if (state.text.length == 0) {
-            textPos++
+        if (text.length == 0) {
+            // no text or expression
+            index++
             return
         }
 
-        if (state.expressions.length === 0) {
+        if (expressions.length === 0) {
             // no expression
-            context.state.template.push(state.text.join(''))
-        } else {
-            if (!elmStmt) {
-                elmStmt = buildVariableDeclaration('el1', pathStmt(context.path))
-                context.state.init.push(elmStmt)
-            }
+            ctx.state.template.push(text.join(''))
 
-            const text1 = buildVariableDeclaration(
-                'text1',
-                buildMemberExpression2(
-                    buildMemberExpression('el1', 'firstChild'),
-                    'firstSibling',
-                    textPos
-                )
-            )
-
-            context.state.init.push(text1)
-
-            const stmt = buildEffect([
-                buildAssignmentStatement(
-                    buildMemberExpression('text1', 'textContent'),
-                    buildTemplateLiteral(state.text, state.expressions)
-                )
-            ])
-            context.state.template.push(' ')
-            context.state.effects.push(stmt)
+            text = []
+            expressions = []
+            index += 2
+            return
         }
 
-        state = {
-            text: [],
-            expressions: []
+        // reactive
+        if (!rootId) {
+            rootId = nextElementId(ctx)
+            const rootStmt = b.declaration(rootId, fromPath(ctx))
+            ctx.state.init.elem.push(rootStmt)
         }
 
-        textPos += 2
+        const textId = nextTextId(ctx)
+        const textStmt = b.declaration(textId, b.sibling(b.child(rootId), index))
+        ctx.state.init.text.push(textStmt)
+
+        const effectStmt = b.effect([
+            b.assignment(b.textContent(textId), b.template(text, expressions))
+        ])
+        ctx.state.template.push(' ')
+        ctx.state.effects.push(effectStmt)
+
+        text = []
+        expressions = []
+        index += 2
     }
 }
 
-function pathStmt(path) {
+export function fromPath(ctx) {
     let stmt
-    let parent
+    let fragment
 
-    for (const node of path) {
-        if (node.type === 'Fragment') {
-            if (!parent) {
-                parent = node
-                stmt = buildIdentifier('root')
-                continue
-            }
-            parent = node
-            continue
-        }
-
-        if (node.type === 'Element') {
-            stmt = buildMemberExpression2(stmt, 'firstChild')
-
-            let index = parent.nodes.indexOf(node)
-            while (index-- > 0) {
-                stmt = buildMemberExpression2(stmt, 'nextSibling')
-            }
+    for (const node of ctx.path) {
+        switch (node.type) {
+            case 'Fragment':
+                stmt ??= b.id('root')
+                fragment = node
+                break
+            case 'Element':
+                stmt = b.sibling(b.child(stmt), fragment.nodes.indexOf(node))
+                break
         }
     }
-
     return stmt
+}
+
+export function nextElementId(ctx) {
+    return b.id(`elem_${ctx.state.init.elem.length + 1}`)
+}
+
+function nextTextId(ctx) {
+    return b.id(`text_${ctx.state.init.text.length + 1}`)
 }

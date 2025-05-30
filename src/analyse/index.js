@@ -1,13 +1,17 @@
 import { walk } from 'zimmerframe';
+import { AssignmentExpression } from './visitors/AssignmentExpression.js';
+import { MethodDefinition } from './visitors/MethodDefinition.js';
 
 const visitors = {
-    
+    AssignmentExpression,
+    MethodDefinition
 }
 
 export function analyse(ast) {
 
     const state = {
-        fragment: []
+        signals: [],
+        methods: []
     }
 
     walk(ast, state, visitors)

@@ -1,0 +1,30 @@
+<script type="module">
+    import { signal, effect } from '@webreflection/signal'
+
+    class Test extends HTMLElement {
+        constructor() {
+            super()
+            this.count = signal(0)
+        }
+
+        connectedCallback() {}
+
+        inc(num) {
+            this.count.value += num
+        }
+    }
+
+    customElements.define('my-test', Test)
+</script>
+
+<template>
+    <button name={count} onclick={inc(3)}>click</button>
+    <div>hello {count}</div>
+    <style>
+        div {
+            color: red;
+        }
+    </style>
+
+    <div>after {count}</div>
+</template>

@@ -1,6 +1,6 @@
-import { parseFragment } from './element'
-import { Parser } from './parser'
-import { TokenTypes } from './tokentype'
+import { parseFragment } from './element.js'
+import { Parser } from './parser.js'
+import { TokenTypes } from './tokentype.js'
 
 /**
  *

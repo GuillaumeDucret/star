@@ -1,7 +1,9 @@
-
-
-export function Element(node, context) {
-    context.state.template.push(`<${node.name}>`)
-    context.next()
-    context.state.template.push(`</${node.name}>`)
+export function Element(node, ctx) {
+    ctx.state.template.push(`<${node.name}`)
+    for (const attribute of node.attributes) {
+        ctx.visit(attribute)
+    }
+    ctx.state.template.push('>')
+    ctx.visit(node.fragment)
+    ctx.state.template.push(`</${node.name}>`)
 }

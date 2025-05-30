@@ -1,7 +1,9 @@
-import { parseIfBlock } from './block'
-import { parseExpressionTag } from './expression'
-import { Parser } from './parser'
-import { TokenTypes } from './tokentype'
+import { parseAttributes } from './attributes.js'
+import { parseIfBlock } from './block.js'
+import { parseExpressionTag } from './expression.js'
+import { Parser } from './parser.js'
+import { parseStyle } from './style.js'
+import { TokenTypes } from './tokentype.js'
 
 /**
  *
@@ -13,7 +15,7 @@ export function parseElement(p) {
     p.expectToken([TokenTypes.lte])
     p.expectToken([TokenTypes.name])
     const name = p.value
-    p.skipWhitespaces()
+    const attributes = parseAttributes(p)
     p.expectToken([TokenTypes.gte, TokenTypes.slashGte])
 
     if (p.type === TokenTypes.gte) {
@@ -27,9 +29,9 @@ export function parseElement(p) {
 
         if (name !== tagNameClose) throw new Error('wrong closing tag')
 
-        return { type: 'Element', name, fragment, start, end: p.pos }
+        return { type: 'Element', name, attributes, fragment, start, end: p.pos }
     }
-    return { type: 'Element', name, start, end: p.pos }
+    return { type: 'Element', name, attributes, start, end: p.pos }
 }
 
 /**
@@ -37,7 +39,7 @@ export function parseElement(p) {
  * @param {Parser} p
  * @returns
  */
-export function parseFragment(p) {
+export function parseFragment(p, allowStyle = false) {
     const nodes = []
 
     p.skipWhitespaces()
@@ -47,19 +49,26 @@ export function parseFragment(p) {
 
         switch (punctToken?.type) {
             case TokenTypes.lte:
-                if (nameToken?.value === 'script') throw new Error('invalid script position')
-                if (nameToken?.value === 'style') throw new Error('invalid style position')
+                if (nameToken?.value === 'script') {
+                    throw new Error('invalid script position')
+                }
+                if (nameToken?.value === 'style' && !allowStyle) {
+                    throw new Error('invalid style position')
+                }
+                if (nameToken?.value === 'style') {
+                    nodes.push(parseStyle(p))
+                    break
+                }
 
                 nodes.push(parseElement(p))
                 break
-
             case TokenTypes.braceLHash:
                 if (nameToken?.value === 'if') {
                     nodes.push(parseIfBlock(p))
                     break
                 }
-                throw new Error(`unknown block ${nameToken?.value}`)
 
+                throw new Error(`unknown block ${nameToken?.value}`)
             case TokenTypes.braceL:
                 nodes.push(parseExpressionTag(p))
                 break
@@ -78,8 +87,8 @@ export function parseFragment(p) {
  * @param {Parser} p
  * @returns
  */
-export function parseText(p) {
+function parseText(p) {
     p.expectToken([TokenTypes.text])
     console.log(p.value)
-    return { type: 'Text', start: p.start, end: p.end, raw: p.value }
+    return { type: 'Text', start: p.start, end: p.end, data: p.value }
 }

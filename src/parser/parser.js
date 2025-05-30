@@ -1,6 +1,6 @@
-import { parseRoot } from './root'
+import { parseRoot } from './root.js'
 
-/** @typedef {import('./tokentype').TokenType} TokenType */
+/** @typedef {import('./tokentype.js').TokenType} TokenType */
 
 /**
  * @typedef {Object} Token
@@ -191,6 +191,10 @@ export class Parser {
             }
             break
         }
+    }
+
+    raiseUnexpectedToken() {
+        throw new Error(`unexpected token ${this.input[this.pos]} at position ${this.pos}`)
     }
 
     isEOF() {

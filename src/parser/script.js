@@ -1,6 +1,7 @@
 import { parse as parseJS } from 'acorn'
-import { TokenTypes } from './tokentype'
-import { Parser } from './parser'
+import { TokenTypes } from './tokentype.js'
+import { Parser } from './parser.js'
+import { parseAttributes } from './attributes.js'
 /** @import {Program} from 'acorn' */
 
 /**
@@ -13,8 +14,7 @@ export function parseScript(p) {
     p.expectToken([TokenTypes.lte])
     p.expectToken([TokenTypes.name])
     const name = p.value
-
-    p.skipWhitespaces()
+    parseAttributes(p)
     p.expectToken([TokenTypes.gte])
 
     const content = parseProgram(p)
@@ -38,7 +38,7 @@ export function parseScript(p) {
 function parseProgram(p) {
     const start = p.pos
     skipCode(p)
-    return parseJS(p.input.slice(start, p.pos), { ecmaVersion: 2020 })
+    return parseJS(p.input.slice(start, p.pos), { ecmaVersion: 2020, sourceType: 'module' })
 }
 
 /**

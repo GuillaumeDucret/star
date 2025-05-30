@@ -23,7 +23,7 @@ const source = `
 
 </script>
 <template>
-    <div>aa {count} ss<b>h</b>{count} bb</div> 
+    <div>{count}<b>h</b>{count} bb</div> 
 </template>
 `
 

@@ -1,6 +1,6 @@
 import { parse } from 'css-tree'
-import { TokenTypes } from './tokentype'
-import { Parser } from './parser'
+import { TokenTypes } from './tokentype.js'
+import { Parser } from './parser.js'
 
 /**
  *

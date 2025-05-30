@@ -1,7 +1,7 @@
-import { Parser } from './parser'
-import { parseScript } from './script'
-import { parseTemplate } from './template'
-import { TokenTypes } from './tokentype'
+import { Parser } from './parser.js'
+import { parseScript } from './script.js'
+import { parseTemplate } from './template.js'
+import { TokenTypes } from './tokentype.js'
 
 /**
  * @param {Parser} p

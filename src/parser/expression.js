@@ -1,6 +1,6 @@
 import { parseExpressionAt } from 'acorn'
-import { Parser } from './parser'
-import { TokenTypes } from './tokentype'
+import { Parser } from './parser.js'
+import { TokenTypes } from './tokentype.js'
 
 /**
  *

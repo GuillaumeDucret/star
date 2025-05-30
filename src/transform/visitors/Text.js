@@ -1,3 +1,3 @@
-export function Text(node, context) {
-    context.state.text.push(node.raw)
+export function Text(node, ctx) {
+    ctx.state.text.push(node.data)
 }

@@ -34,6 +34,9 @@ export const TokenTypes = {
     gte: charTT('>', [62]),
     slashGte: charTT('/>', [47, 62]),
     lteSlash: charTT('</', [60, 47]),
+    eq: charTT('=', [61]),
+    quote: charTT('\'', [39]),
+    doubleQuote: charTT('"', [34]),
 
     // block punctuation
     braceL: charTT('{', [123]),

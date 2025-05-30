@@ -1,14 +1,16 @@
-
-
-export function Template(node, {next}) {
-
+export function Template(_, ctx) {
     const state = {
+        css: '',
         template: [],
         effects: [],
-        selector: '',
-        init: []
+        handlers: [],
+        init: {
+            elem: [],
+            text: []
+        },
+        analysis: ctx.state.analysis
     }
 
-    next(state)
-    return {type: 'TemplateMod', ...state}
+    ctx.next(state)
+    return { type: 'TemplateMod', ...state }
 }

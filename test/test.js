@@ -1,5 +1,5 @@
-const STYLE = '<style>div{color:red}</style>';
 const TEMPLATE = '<button>click</button><div> </div><!><div> </div>';
+const STYLE = '<style>div{color:red}</style>';
 
 import { signal, effect } from '@webreflection/signal';
 
@@ -7,6 +7,10 @@ class Test extends HTMLElement {
 	constructor() {
 		super();
 		this.count = signal(0);
+	}
+
+	inc(num) {
+		this.count.value += num;
 	}
 
 	connectedCallback() {
@@ -33,14 +37,9 @@ class Test extends HTMLElement {
 			text_2.textContent = `after${this.count.value}`;
 		});
 
-		elem_2.onclick = (args) => {
-			console.log(args)
+		elem_2.onclick = () => {
 			this.inc(3)
 		};
-	}
-
-	inc(num) {
-		this.count.value += num;
 	}
 }
 

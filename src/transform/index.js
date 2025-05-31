@@ -9,6 +9,7 @@ import { Text } from './visitors/Text.js'
 import { Fragment } from './visitors/Fragment.js'
 import { Style } from './visitors/Style.js'
 import { Attribute } from './visitors/Attribute.js'
+import { ClassBody } from './visitors/ClassBody.js'
 
 const templateVisitors = {
     Template,
@@ -23,7 +24,8 @@ const templateVisitors = {
 
 const visitors = {
     Program,
-    MethodDefinition
+    MethodDefinition,
+    ClassBody
 }
 
 export function transform(ast, analysis) {

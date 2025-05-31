@@ -4,7 +4,7 @@ import * as b from '../../builders.js'
 export function Attribute(node, ctx) {
     const text = []
     const expressions = []
-    console.log(node)
+
     ctx.visit(node.value, { text, expressions, analysis: ctx.state.analysis })
 
     if (expressions.length > 0) {

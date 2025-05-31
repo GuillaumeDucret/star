@@ -39,6 +39,10 @@ export const TokenTypes = {
     doubleQuote: charTT('"', [34]),
 
     // block punctuation
+    quoteBraceL: charTT('\'{', [39, 123]),
+    doubleQuoteBraceL: charTT('"{', [34, 123]),
+    braceRQuote: charTT('}\'', [125, 39]),
+    braceRDoubleQuote: charTT('}"', [125, 34]),
     braceL: charTT('{', [123]),
     braceR: charTT('}', [125]),
     braceLHash: charTT('{#', [123, 35]),

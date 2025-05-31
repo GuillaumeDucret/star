@@ -133,6 +133,31 @@ export function declaration(id, init) {
     }
 }
 
+export function connectedCallback(body = []) {
+    return {
+        type: 'MethodDefinition',
+        static: false,
+        computed: false,
+        key: {
+            type: 'Identifier',
+            name: 'connectedCallback'
+        },
+        kind: 'method',
+        value: {
+            type: 'FunctionExpression',
+            id: null,
+            expression: false,
+            generator: false,
+            async: false,
+            params: [],
+            body: {
+                type: 'BlockStatement',
+                body
+            }
+        }
+    }
+}
+
 export function literal(value) {
     return { type: 'Literal', value }
 }

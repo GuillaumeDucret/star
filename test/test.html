@@ -7,8 +7,6 @@
             this.count = signal(0)
         }
 
-        connectedCallback() {}
-
         inc(num) {
             this.count.value += num
         }
@@ -18,7 +16,7 @@
 </script>
 
 <template>
-    <button name={count} onclick={inc(3)}>click</button>
+    <button name="{count}" onclick="{inc(3)}">click</button>
     <div>hello {count}</div>
     <style>
         div {

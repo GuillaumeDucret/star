@@ -1,4 +1,4 @@
-import { parseExpressionTag } from './expression.js'
+import { parseAttributeExpressionTag, parseExpressionTag } from './expression.js'
 import { Parser } from './parser.js'
 import { TokenTypes } from './tokentype.js'
 
@@ -26,15 +26,17 @@ function parseAttribute(p) {
 
     if (p.readToken([TokenTypes.eq])) {
         const punctToken = p.peakToken([
-            TokenTypes.braceL,
+            TokenTypes.quoteBraceL,
+            TokenTypes.doubleQuoteBraceL,
             TokenTypes.quote,
             TokenTypes.doubleQuote
         ])
 
         let value
         switch (punctToken?.type) {
-            case TokenTypes.braceL:
-                value = parseExpressionTag(p)
+            case TokenTypes.quoteBraceL:
+            case TokenTypes.doubleQuoteBraceL:
+                value = parseAttributeExpressionTag(p)
                 break
             case TokenTypes.quote:
             case TokenTypes.doubleQuote:

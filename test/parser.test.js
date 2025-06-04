@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { parse } from '../src/parser'
 
-const input = `<script>let a = 'a'</script><template><div>aa</div><style>div {color: red}</style>dd</template>`
+const input = `<script>let a = 'a'</script><template><div>aa</div><style>div {color: red}</style>dddd</template>`
 
 describe('parse()', {}, () => {
     it('simple', {}, () => {

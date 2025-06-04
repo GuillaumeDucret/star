@@ -1,6 +1,7 @@
 import { signal, effect } from '@webreflection/signal';
+import * as b from '../../test/dep.js';
 
-class Test extends HTMLElement {
+class Test2 extends HTMLElement {
 	constructor() {
 		super();
 		this.count = signal(0);
@@ -27,11 +28,11 @@ class Test extends HTMLElement {
 		});
 
 		effect(() => {
-			text_1.textContent = `helloxx${this.count.value}stufsf`;
+			text_1.textContent = `helloxxzzz ${this.count.value} stufsf`;
 		});
 
 		effect(() => {
-			text_2.textContent = `after${this.count.value}`;
+			text_2.textContent = `after ${this.count.value}`;
 		});
 
 		elem_2.onclick = () => {
@@ -43,4 +44,4 @@ class Test extends HTMLElement {
 const TEMPLATE = '<button>click</button><div> </div><!><div> </div>';
 const STYLE = '<style>div{color:red}</style>';
 
-customElements.define('my-test', Test);
+customElements.define('my-test2', Test2);

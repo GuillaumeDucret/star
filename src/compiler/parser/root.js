@@ -8,7 +8,7 @@ import { TokenTypes } from './tokentype.js'
  * @returns
  */
 export function parseRoot(p) {
-    const root = {type: 'Root'}
+    const root = { type: 'Root' }
 
     p.skipWhitespaces()
     while (!p.isEOF()) {
@@ -26,11 +26,7 @@ export function parseRoot(p) {
             continue
         }
 
-        console.log(lteToken)
-        console.log(nameToken)
-        console.log(p.input.charCodeAt(p.pos))
-
-        throw new Error('Unknown tag at pos' + p.pos)
+        throw new Error('unexpected html tag at position ' + p.pos)
     }
 
     return root

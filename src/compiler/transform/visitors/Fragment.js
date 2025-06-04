@@ -71,11 +71,32 @@ export function fromPath(ctx) {
                 fragment = node
                 break
             case 'Element':
-                stmt = b.sibling(b.child(stmt), fragment.nodes.indexOf(node))
+                stmt = b.sibling(b.child(stmt), siblingCount(fragment, node))
                 break
         }
     }
     return stmt
+}
+
+function siblingCount(fragment, node) {
+    let count = 0
+    let previousSibling
+
+console.log(fragment)
+
+    for (const sibling of fragment.nodes) {
+        if (sibling === node) break
+        if (
+            (previousSibling?.type === 'ExpressionTag' || previousSibling?.type === 'Text') &&
+            (sibling?.type === 'ExpressionTag' || sibling?.type === 'Text')
+        ) {
+            continue
+        }
+
+        count++
+        previousSibling = sibling
+    }
+    return count
 }
 
 export function nextElementId(ctx) {

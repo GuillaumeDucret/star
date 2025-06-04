@@ -1,46 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
-  </head>
-  <body>
-    <div id="app">
-    </div>
-    <div id="test"> <span>zz</span><!----><span>gg</span></div>
-    <template id="custom-paragraph">
-      <style>
-        p {
-          color: white;
-          background-color: #666;
-          padding: 5px;
-        }
-        span {
-          color: green;
-        }
-      </style>
-      <p>My paragraph <my-inner><span>1</span></my-inner></p>
-    </template>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vite + TS</title>
+    </head>
+    <body>
+        <my-test></my-test>
 
-    <template id="inner">
-      <style>
-      </style>
-      <span>Hello <slot>2</slot></span>
-    </template>
-
-    {#if}
-    <my-paragraph></my-paragraph>
-    {/if}
-
-    <my-element></my-element>
-
-    <my-test></my-test>
-
-<button id={test} name="{count}" style="inc" onclick="{console.log('test')}">test</button>
-
-    <script type="module" src="/src/main.ts"></script>
-    <script type="module" src="/test/test.js"></script>
-  </body>
+        <script type="module" src="/wc/my-test.js"></script>
+        <script type="module" src="/wc/sub/my-test2.js"></script>
+    </body>
 </html>

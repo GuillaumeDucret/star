@@ -182,6 +182,15 @@ export class Parser {
         )
     }
 
+    token() {
+        return {
+            type: this.type,
+            start: this.start,
+            end: this.end,
+            value: this.value
+        }
+    }
+
     skipWhitespaces() {
         while (this.pos < this.input.length) {
             const code = this.input.charCodeAt(this.pos)

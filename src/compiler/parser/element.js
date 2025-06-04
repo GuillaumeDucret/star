@@ -88,7 +88,19 @@ export function parseFragment(p, allowStyle = false) {
  * @returns
  */
 function parseText(p) {
+    const previousToken = p.token()
     p.expectToken([TokenTypes.text])
-    console.log(p.value)
-    return { type: 'Text', start: p.start, end: p.end, data: p.value }
+    let data = p.value
+
+    if (previousToken.type === TokenTypes.braceR) {
+        // add back skipped whitespaces if the previous sibling is an expressionTag
+        data = p.input.substring(previousToken.end, p.start) + data
+    }
+
+    if (!p.peakToken([TokenTypes.braceL])) {
+        // remove trailing spaces if next sibling is not an expressionTag
+        data = data.trimEnd()
+    }
+
+    return { type: 'Text', start: p.start, end: p.end, data }
 }

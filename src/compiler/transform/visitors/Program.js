@@ -15,7 +15,15 @@ export function Program(node, ctx) {
         stmts.push(stmt)
     }
 
+    if (!ctx.state.analysis.hasDefineCustomElement) {
+        const stmt = b.defineCustomElement(
+            ctx.state.options.customElementName ?? 'my-component',
+            ctx.state.analysis.customElementClassName ?? 'Component'
+        )
+        stmts.push(stmt)
+    }
+
     if (stmts.length > 0) {
-        return { ...node, body: [...stmts, ...node.body] }
+        return { ...node, body: [...node.body, ...stmts] }
     }
 }

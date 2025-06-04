@@ -1,7 +1,8 @@
 <script type="module">
     import { signal, effect } from '@webreflection/signal'
+    import * as b from '../dep.js'
 
-    class Test extends HTMLElement {
+    class Test2 extends HTMLElement {
         constructor() {
             super()
             this.count = signal(0)
@@ -11,13 +12,11 @@
             this.count.value += num
         }
     }
-
-    customElements.define('my-test', Test)
 </script>
 
 <template>
     <button name="{count}" onclick="{inc(3)}">click</button>
-    <div>hello {count}</div>
+    <div>helloxxzzz {count} stufsf</div>
     <style>
         div {
             color: red;

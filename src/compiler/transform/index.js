@@ -10,6 +10,7 @@ import { Fragment } from './visitors/Fragment.js'
 import { Style } from './visitors/Style.js'
 import { Attribute } from './visitors/Attribute.js'
 import { ClassBody } from './visitors/ClassBody.js'
+import { ImportDeclaration } from './visitors/ImportDeclaration.js'
 
 const templateVisitors = {
     Template,
@@ -22,25 +23,27 @@ const templateVisitors = {
     Attribute
 }
 
-const visitors = {
+const scriptVisitors = {
     Program,
     MethodDefinition,
-    ClassBody
+    ClassBody,
+    ImportDeclaration
 }
 
-export function transform(ast, analysis) {
+export function transform(ast, analysis, options) {
     //console.log(JSON.stringify(ast.template, undefined, 2))
 
-    const template = walk(ast.template, {analysis}, templateVisitors)
+    const template = walk(ast.template, { analysis, options }, templateVisitors)
 
     //console.log(JSON.stringify(template, undefined, 2))
 
     const state = {
         analysis,
-        template
+        template,
+        options
     }
 
-    return walk(ast.script.content, state, visitors)
+    return walk(ast.script.content, state, scriptVisitors)
 }
 
 export function transformTemplate(template) {

@@ -1,4 +1,4 @@
-import { fromPath, nextElementId } from './Fragment.js'
+import { nextElementId, pathStmt } from '../context.js'
 import * as b from '../../builders.js'
 
 export function Attribute(node, ctx) {
@@ -9,7 +9,7 @@ export function Attribute(node, ctx) {
 
     if (expressions.length > 0) {
         const rootId = nextElementId(ctx)
-        const rootStmt = b.declaration(rootId, fromPath(ctx))
+        const rootStmt = b.declaration(rootId, pathStmt(ctx))
         ctx.state.init.elem.push(rootStmt)
 
         if (node.name.startsWith('on')) {

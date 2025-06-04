@@ -4,7 +4,7 @@ class Test extends HTMLElement {
 	constructor() {
 		super();
 		this.count = signal(0);
-		this.name = 'ss</scrip ';
+		this.name = 'ssdd</scrip ';
 	}
 
 	inc(num) {
@@ -28,7 +28,7 @@ class Test extends HTMLElement {
 		const text_4 = elem_6.firstChild;
 
 		effect(() => {
-			text_1.textContent = `aaa ${this.count.value} bb`;
+			text_1.textContent = `aaadd ${this.count.value} bb`;
 		});
 
 		effect(() => {

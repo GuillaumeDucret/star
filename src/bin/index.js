@@ -1,91 +1,61 @@
 #! /usr/bin/env node
 
 import path from 'path'
-import { readFileSync, watch, writeFileSync, existsSync, mkdirSync } from 'fs'
+import { readFileSync, watch as watchDir, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { startDevServer } from '@web/dev-server'
-import { walk } from '../utils/files.js'
 import { compile } from '../compiler/index.js'
+import { walkDir } from '../utils/files.js'
 import * as argv from '../utils/argv.js'
 
 const command = argv.command()
+
+const rootPath = path.resolve(argv.option('root')) ?? process.cwd()
+const srcDirPath = path.join(rootPath, argv.option('srcDir') ?? './src')
+const outDirPath = path.join(rootPath, argv.option('outDir') ?? './wc')
 
 switch (command) {
     case 'build':
         build()
         break
-    case 'test':
-        const srcDir = argv.option('srcDir') ?? './src'
-        const outDir = argv.option('outDir') ?? './wc'
-        const srcPath = path.join(process.cwd(), srcDir)
-        const outPath = path.join(process.cwd(), outDir)
-
-        console.log(path.relative(outPath, srcPath))
-        break
     default:
         build()
-        dev()
+        watch()
         break
 }
 
 function build() {
-    const rootPath = path.resolve(argv.option('root')) ?? process.cwd()
-    const srcDir = argv.option('srcDir') ?? './src'
-    const outDir = argv.option('outDir') ?? './wc'
-    const srcPath = path.join(rootPath, srcDir)
-    const outPath = path.join(rootPath, outDir)
+    walkDir(srcDirPath, {}, (entry) => {
+        if (!entry.name.endsWith('.html')) return
+        if (entry.name === 'index.html') return
 
-    walk(srcPath, {}, (file) => {
-        if (!file.name.endsWith('.html')) return
-        if (file.name === 'index.html') return
-        console.log(file.name)
-        const srcFilePath = path.join(file.parentPath, file.name)
+        const srcFilePath = path.join(entry.parentPath, entry.name)
+        const out = resolveOut(srcFilePath)
+
         const source = readFileSync(srcFilePath, { encoding: 'utf8' })
+        const result = compile(source, out)
 
-        const outParentPath = path.join(outPath, path.relative(srcPath, file.parentPath))
-        const outFileName = file.name.replace('.html', '.js')
-        const outFilePath = path.join(outParentPath, outFileName)
-
-        const importShift = path.relative(outParentPath, file.parentPath)
-
-        const customElementName = path.basename(file.name, '.html')
-        const result = compile(source, { customElementName, importShift })
-
-        if (!existsSync(outParentPath)) {
-            mkdirSync(outParentPath, { recursive: true })
+        if (!existsSync(out.parentPath)) {
+            mkdirSync(out.parentPath, { recursive: true })
         }
-        writeFileSync(outFilePath, result.code)
+        writeFileSync(out.filePath, result.code)
     })
 }
 
-function dev() {
-    const rootPath = path.resolve(argv.option('root')) ?? process.cwd()
-    const srcDir = argv.option('srcDir') ?? './src'
-    const outDir = argv.option('outDir') ?? './wc'
-    const srcPath = path.join(rootPath, srcDir)
-    const outPath = path.join(rootPath, outDir)
-
-    watch(srcPath, { recursive: true }, (_, fileName) => {
+function watch() {
+    watchDir(srcDirPath, { recursive: true }, (_, fileName) => {
         if (!fileName.endsWith('.html')) return
         if (fileName.endsWith('index.html')) return
 
-        const srcFileName = path.basename(fileName)
-        const srcFilePath = path.join(srcPath, fileName)
-        const srcParentPath = path.dirname(srcFilePath)
+        const srcFilePath = path.join(srcDirPath, fileName)
+        const out = resolveOut(srcFilePath)
+
         const source = readFileSync(srcFilePath, { encoding: 'utf8' })
+        const result = compile(source, out)
 
-        const outParentPath = path.join(outPath, path.relative(srcPath, srcParentPath))
-        const outFileName = srcFileName.replace('.html', '.js')
-        const outFilePath = path.join(outParentPath, outFileName)
-
-        const importShift = path.relative(outParentPath, srcParentPath)
-
-        const customElementName = path.basename(fileName, '.html')
-        const result = compile(source, { customElementName, importShift })
-
-        if (!existsSync(outParentPath)) {
-            mkdirSync(outParentPath, { recursive: true })
+        if (!existsSync(out.parentPath)) {
+            mkdirSync(out.parentPath, { recursive: true })
         }
-        writeFileSync(outFilePath, result.code)
+        writeFileSync(out.filePath, result.code)
     })
 
     startDevServer({
@@ -99,4 +69,23 @@ function dev() {
         readCliArgs: false,
         readFileConfig: false
     })
+}
+
+function resolveOut(srcFilePath) {
+    const srcFileName = path.basename(srcFilePath)
+    const srcParentPath = path.dirname(srcFilePath)
+
+    const parentPath = path.join(outDirPath, path.relative(srcDirPath, srcParentPath))
+    const fileName = srcFileName.replace('.html', '.js')
+    const filePath = path.join(parentPath, fileName)
+    const importShift = path.relative(parentPath, srcParentPath)
+    const customElementName = path.basename(fileName, '.js')
+
+    return {
+        parentPath,
+        fileName,
+        filePath,
+        importShift,
+        customElementName
+    }
 }

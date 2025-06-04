@@ -1,5 +1,4 @@
 import { signal, effect } from '@webreflection/signal';
-import * as b from '../test/dep.js';
 
 class Test extends HTMLElement {
 	constructor() {
@@ -57,4 +56,4 @@ class Test extends HTMLElement {
 const TEMPLATE = '<div> <button> </button></div><p><span> </span></p><!><div title="efe ef"> </div><slot>slot</slot>';
 const STYLE = '<style>div{color:red}</style>';
 
-customElements.define('my-test', Test);
+customElements.define('ex-counter', Test);

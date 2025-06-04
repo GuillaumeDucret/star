@@ -2,10 +2,10 @@
 
 import path from 'path'
 import { readFileSync, watch, writeFileSync, existsSync, mkdirSync } from 'fs'
+import { startDevServer } from '@web/dev-server'
 import { walk } from '../utils/files.js'
 import { compile } from '../compiler/index.js'
-import { startDevServer } from '@web/dev-server'
-import * as argv from './argv.js'
+import * as argv from '../utils/argv.js'
 
 const command = argv.command()
 
@@ -28,14 +28,16 @@ switch (command) {
 }
 
 function build() {
+    const rootPath = path.resolve(argv.option('root')) ?? process.cwd()
     const srcDir = argv.option('srcDir') ?? './src'
     const outDir = argv.option('outDir') ?? './wc'
-    const srcPath = path.join(process.cwd(), srcDir)
-    const outPath = path.join(process.cwd(), outDir)
+    const srcPath = path.join(rootPath, srcDir)
+    const outPath = path.join(rootPath, outDir)
 
     walk(srcPath, {}, (file) => {
         if (!file.name.endsWith('.html')) return
-
+        if (file.name === 'index.html') return
+        console.log(file.name)
         const srcFilePath = path.join(file.parentPath, file.name)
         const source = readFileSync(srcFilePath, { encoding: 'utf8' })
 
@@ -56,14 +58,15 @@ function build() {
 }
 
 function dev() {
+    const rootPath = path.resolve(argv.option('root')) ?? process.cwd()
     const srcDir = argv.option('srcDir') ?? './src'
     const outDir = argv.option('outDir') ?? './wc'
-    const srcPath = path.join(process.cwd(), srcDir)
-    const outPath = path.join(process.cwd(), outDir)
-
+    const srcPath = path.join(rootPath, srcDir)
+    const outPath = path.join(rootPath, outDir)
 
     watch(srcPath, { recursive: true }, (_, fileName) => {
         if (!fileName.endsWith('.html')) return
+        if (fileName.endsWith('index.html')) return
 
         const srcFileName = path.basename(fileName)
         const srcFilePath = path.join(srcPath, fileName)
@@ -79,8 +82,6 @@ function dev() {
         const customElementName = path.basename(fileName, '.html')
         const result = compile(source, { customElementName, importShift })
 
-
-
         if (!existsSync(outParentPath)) {
             mkdirSync(outParentPath, { recursive: true })
         }
@@ -89,7 +90,7 @@ function dev() {
 
     startDevServer({
         config: {
-            rootDir: process.cwd(),
+            rootDir: rootPath,
             port: 3000,
             watch: true,
             open: true,

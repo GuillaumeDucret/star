@@ -1,11 +1,11 @@
 <script type="module">
     import { signal, effect } from '@webreflection/signal'
-    import * as b from '../dep.js'
 
-    class Test2 extends HTMLElement {
+    class Test extends HTMLElement {
         constructor() {
             super()
             this.count = signal(0)
+            this.name = 'ss</scrip '
         }
 
         inc(num) {
@@ -15,13 +15,19 @@
 </script>
 
 <template>
-    <button name="{count}" onclick="{inc(3)}">click</button>
-    <div>helloxxzzz {count} stufsf</div>
+    <div>
+        aaa {count} bb
+        <button name="{count}" onclick="{inc(3)}">click {count}</button>
+    </div>
+    <p>
+        <span>helloxxsss {count} stufsf {count}ss</span>
+    </p>
     <style>
         div {
             color: red;
         }
     </style>
 
-    <div>after {count}</div>
+    <div title="efe ef">after {count}</div>
+    <slot>slot</slot>
 </template>
